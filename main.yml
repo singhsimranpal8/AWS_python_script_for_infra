@@ -1,0 +1,32 @@
+name: My AWS Workflow
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env: 
+      AWS_ACCESS_KEY_ID: ${{ secrets.SECRETSAWSACCESSKEYID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRETSAWSKEY }}
+    steps:
+       - name: Checkout code
+         uses: actions/checkout@v2
+    
+      # Add additional steps to perform actions using the AWS SDK or CLI
+ 
+       - name: Execute script
+         run: |
+          # Add your script commands here
+          sudo apt update -y
+          sudo -E aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+          sudo -E aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+          sudo -E aws configure set default.region ap-northeast-1
+          sudo apt install python3-pip
+          sudo -E pip3 install boto3
+          sudo -E pip install github3.py
+          sudo -E pip3 install awscli
+          sudo -E pip3 install waiter
+          sudo -E python3 app/newimage.py
