@@ -36,7 +36,7 @@ response = ec2_client.run_instances(
     MinCount=1,
     MaxCount=1,
     UserData='''#!/bin/bash
-                git -C /var/www/html/bizhub-cicd-testing pull https://github.com/simranpal-webkul/bizhub-cicd-testing.git staging''')
+                git -C /var/www/html/bizhub-cicd-testing pull git@github.com:simranpal-webkul/bizhub-cicd-testing staging''')
 
 
 # Get instance ID
