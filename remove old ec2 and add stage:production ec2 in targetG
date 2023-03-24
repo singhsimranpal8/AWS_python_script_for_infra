@@ -1,0 +1,22 @@
+import boto3
+
+target_group_arn = "arn:aws:elasticloadbalancing:ap-northeast-1:778611821858:targetgroup/simran/adb99844b9793738"
+
+ec2_client = boto3.client("ec2")
+elbv2_client = boto3.client("elbv2")
+
+instances = elbv2_client.describe_target_health(TargetGroupArn=target_group_arn)["TargetHealthDescriptions"]
+
+instances_with_tag = []
+for instance in instances:
+    instance_id = instance["Target"]["Id"]
+    tags = ec2_client.describe_tags(Filters=[{"Name": "resource-id", "Values": [instance_id]}])["Tags"]
+    if any(tag["Key"] == "simran" and tag["Value"] == "pal" for tag in tags):
+        instances_with_tag.append(instance_id)
+
+for instance in instances:
+    instance_id = instance["Target"]["Id"]
+    if instance_id not in instances_with_tag:
+        print(f"Instance {instance_id} removed from target group.")
+        elbv2_client.deregister_targets(TargetGroupArn=target_group_arn, Targets=[{"Id": instance_id}])
+
